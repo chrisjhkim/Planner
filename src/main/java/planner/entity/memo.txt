@@ -1,0 +1,63 @@
+
+TASK
+	TASK_ID PK
+	NAME
+	PROGRESS_TYPE	// page/chapter/PassOrFail/SimplePercentage
+	PERCENTAGE		
+
+TIMER
+	TIMER_ID PK
+	TASK_ID FK
+
+TIMER_HISTORY_DETAIL
+	TIMER_HISTORY_DETAIL_ID PK
+	TIMER_ID FK
+	START_TIME
+	END_TIME
+	
+	
+
+PROGRESS_HISTORY  
+	PROGRESS_ID PK
+	TASK_ID FK
+	PERCENTAGE
+	
+	// nullables. or // Type 별 Table 분리?
+	PAGE
+	CHAPTER
+	PassOrFail
+	
+	
+	
+	
+	
+	
+	
+Obj
+	OBJ_ID
+	NAME
+	
+	
+BOOK
+	BOOK_ID
+	NAME
+	
+
+
+SelectBox - task 선택
+Start / Pause / Resume / End 
+
+
+History 
+	Show List<Timer>
+		Timer Select - List<TimerHistoryDetail>
+		Task Modification
+		PROGRESS Modification 
+		
+		
+Tasks 
+	Show List<TASK> NAME/PROGRESS
+		TASK select - List<Timer> related to the TASK
+		
+	
+		
