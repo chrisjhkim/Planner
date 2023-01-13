@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Timer {
 	@Id @Column(name = "TIMER_ID")
@@ -19,6 +21,7 @@ public class Timer {
 	
 	@ManyToOne
 	@JoinColumn(name = "TASK_ID")
+	@JsonIgnore
 	private Task task; 
 
 	// TODO ? mapped by 잘 모르겠음
@@ -37,13 +40,13 @@ public class Timer {
 		return task;
 	}
 
-//	public void setTask(Task task) {
-//		if ( this.task != null ) {
-//			this.task.getTimers().remove(this);
-//		}
-//		this.task = task;
-//		this.task.getTimers().add(this);
-//	}
+	public void setTask(Task task) {
+		if ( this.task != null ) {
+			this.task.getTimers().remove(this);
+		}
+		this.task = task;
+		this.task.getTimers().add(this);
+	}
 
 	public List<TimerDetailHistory> getTimerDetailHistories() {
 		return timerDetailHistorys;
@@ -52,7 +55,12 @@ public class Timer {
 	public void setTimerDetailHistories(List<TimerDetailHistory> timerDetailHistorys) {
 		this.timerDetailHistorys = timerDetailHistorys;
 	}
+
+	@Override
+	public String toString() {
+		return "Timer [id=" + id + ", task=" + task + ", timerDetailHistorys.size=" + this.timerDetailHistorys.size() + "]";
+	}
 	
 	
 	
-}
+}	

@@ -6,18 +6,30 @@ import java.util.stream.Collectors;
 
 import javax.persistence.*;
 
+import org.springframework.lang.Nullable;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import planner.enums.ProgressType;
 
 @Entity
+@SequenceGenerator(
+		name="TASK_SEQ_GENERATOR"
+		,  sequenceName = "TASK_SEQ"
+		, initialValue = 1
+		, allocationSize = 1	// 기본값 : 50
+		)
 public class Task {
 
 	@Id @Column(name = "TASK_ID")
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TASK_SEQ_GENERATOR")
 	private int id;
 	
 	private String name;
 	
 	@Enumerated(EnumType.STRING)
+	@Nullable
 	private ProgressType progressType;
 	
 	private int percentage;

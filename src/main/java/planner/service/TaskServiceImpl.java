@@ -1,8 +1,12 @@
 package planner.service;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import planner.entity.Task;
@@ -11,6 +15,8 @@ import planners.common.persistence.MyPersistenceUtil;
 
 @Service
 public class TaskServiceImpl implements TaskService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(TaskServiceImpl.class);
 
 	@Override
 	public void addNewTask(String name, ProgressType progressType) {
@@ -58,6 +64,22 @@ public class TaskServiceImpl implements TaskService {
 			em.close(); //엔티티 매니저 종료
 		}
 
+	}
+
+	@Override
+	public List<Task> getTaskList() {
+		EntityManager em = MyPersistenceUtil.createEntityManager();
+		EntityTransaction tx = em.getTransaction(); //트랜잭션 기능 획득
+		try {
+			List<Task> result = em.createQuery("select t from planner.entity.Task t").getResultList();
+			
+			return result;
+		} catch (Exception e) {
+			logger.error("failed", e);
+			throw e;
+		} finally {
+			em.close(); //엔티티 매니저 종료
+		}
 	}
 
 

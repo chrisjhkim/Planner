@@ -10,6 +10,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Entity
 @Table(name = "TIMER_DETAIL_HISTORY")
@@ -20,6 +22,7 @@ public class TimerDetailHistory {
 	
 	@ManyToOne
 	@JoinColumn(name="TIMER_ID")
+	@JsonIgnore
 	private Timer timer;
 	
 	private LocalDateTime startTime;

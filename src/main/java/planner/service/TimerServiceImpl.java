@@ -5,7 +5,9 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.Query;
 
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import planner.entity.ProgressHistory;
@@ -18,7 +20,7 @@ import planners.common.persistence.MyPersistenceUtil;
 public class TimerServiceImpl implements TimerService {
 
 	@Override
-	public TimerDetailHistory start() {
+	public TimerDetailHistory start(Integer taskId) {
 		EntityManager em = MyPersistenceUtil.createEntityManager();
 		EntityTransaction tx = em.getTransaction(); //트랜잭션 기능 획득
 		TimerDetailHistory detail = new TimerDetailHistory();
@@ -27,6 +29,11 @@ public class TimerServiceImpl implements TimerService {
 			
 			Timer timer = new Timer();
 			em.persist(timer);
+			
+			if ( taskId != null ) {
+				Task task = em.find(Task.class, taskId);
+				timer.setTask(task);
+			}
 			
 			detail.setStartTime(LocalDateTime.now());
 			detail.setTimer(timer);
@@ -45,13 +52,80 @@ public class TimerServiceImpl implements TimerService {
 	}
 
 	@Override
-	public void pause(TimerDetailHistory detail) {
+	public Integer pause(int detailId) {
+		EntityManager em = MyPersistenceUtil.createEntityManager();
+		EntityTransaction tx = em.getTransaction(); //트랜잭션 기능 획득
+		Integer timerId;
+		try {
+			tx.begin(); //트랜잭션 시작
+			
+			TimerDetailHistory detail = em.find(TimerDetailHistory.class, detailId);
+			detail.setEndTime(LocalDateTime.now());
+			timerId = detail.getTimer().getId();
+			tx.commit();//트랜잭션 커밋
+		} catch (Exception e) {
+			tx.rollback(); //트랜잭션 롤백
+			throw e;
+		} finally {
+			em.close(); //엔티티 매니저 종료
+		}
+		return timerId;
+	}
+
+	@Override
+	public TimerDetailHistory resume(int timerId) {
+		EntityManager em = MyPersistenceUtil.createEntityManager();
+		EntityTransaction tx = em.getTransaction(); //트랜잭션 기능 획득
+		TimerDetailHistory detail = new TimerDetailHistory();
+		try {
+			tx.begin(); //트랜잭션 시작
+
+			Timer timer = em.find(Timer.class, timerId);
+			
+			detail.setStartTime(LocalDateTime.now());
+			detail.setTimer(timer);
+			em.persist(detail);
+			
+			
+			tx.commit();//트랜잭션 커밋
+		} catch (Exception e) {
+			tx.rollback(); //트랜잭션 롤백
+			throw e;
+		} finally {
+			em.close(); //엔티티 매니저 종료
+		}
+
+		return detail;
+
+	}
+
+	@Override
+	public void stop(int detailId) {
 		EntityManager em = MyPersistenceUtil.createEntityManager();
 		EntityTransaction tx = em.getTransaction(); //트랜잭션 기능 획득
 		try {
 			tx.begin(); //트랜잭션 시작
 			
-			detail = em.find(TimerDetailHistory.class, detail.getId());
+			TimerDetailHistory detail = em.find(TimerDetailHistory.class, detailId);
+			detail.setEndTime(LocalDateTime.now());
+			
+			tx.commit();//트랜잭션 커밋
+		} catch (Exception e) {
+			tx.rollback(); //트랜잭션 롤백
+			throw e;
+		} finally {
+			em.close(); //엔티티 매니저 종료
+		}
+	}
+
+	@Override
+	public List<TimerDetailHistory> getTimerDetailHistory(Timer timer) {
+		EntityManager em = MyPersistenceUtil.createEntityManager();
+		EntityTransaction tx = em.getTransaction(); //트랜잭션 기능 획득
+		try {
+			tx.begin(); //트랜잭션 시작
+			timer = em.find(Timer.class, timer.getId());
+			TimerDetailHistory detail = em.find(TimerDetailHistory.class, timer.getId());
 			detail.setEndTime(LocalDateTime.now());
 			
 			tx.commit();//트랜잭션 커밋
@@ -62,23 +136,6 @@ public class TimerServiceImpl implements TimerService {
 			em.close(); //엔티티 매니저 종료
 		}
 		
-
-	}
-
-	@Override
-	public void resume(Timer timer) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void stop(Timer timer) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public List<TimerDetailHistory> getTimerDetailHistory(Timer timer) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -94,5 +151,30 @@ public class TimerServiceImpl implements TimerService {
 		// TODO Auto-generated method stub
 
 	}
+
+	@Override
+	public List<Timer> getTimerList(int taskId) {
+		EntityManager em = MyPersistenceUtil.createEntityManager();
+		EntityTransaction tx = em.getTransaction(); //트랜잭션 기능 획득
+		try {
+			tx.begin(); //트랜잭션 시작
+			
+			Task task = em.find(Task.class, taskId);
+			
+			List<Timer> result = task.getTimers();
+			
+			
+			
+			return result;
+			
+		} catch (Exception e) {
+			tx.rollback(); //트랜잭션 롤백
+			throw e;
+		} finally {
+			em.close(); //엔티티 매니저 종료
+		}
+
+	}
+
 
 }

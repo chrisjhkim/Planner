@@ -11,6 +11,7 @@ public interface TaskService {
 	
 	public void addNewTask(String name, ProgressType progressType);
 	public void editTask(int taskId, String name, ProgressType progressType);
+	public List<Task> getTaskList();
 
 	
 }

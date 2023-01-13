@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<title>2Insert title here</title>
+</head>
+<body>
+	<select id="selectTask">
+		<option value="">--</option>
+	</select>
+	<div>
+		<button id="btnStartTimer">START</button>
+		<button id="btnPauseTimer" disabled>PAUSE</button>
+		<button id="btnResumeTimer" disabled>RESUME</button>
+		<button id="btnFinishTimer" disabled>FINISH</button>
+	</div>
+</body>
+<script type="text/javascript">
+	initPage();
+
+	var currentTimerId;
+	var currentDetailTimerId;
+	
+	
+	function initPage(){
+		var serverUrl = window.location.hostname+":"+window.location.port;
+		$.ajax({
+			url : "/taskList",
+			method : "GET",
+			contentType : 'application/json',
+			success : function(data){
+// 				console.log(data);
+				let selectEl = document.querySelector("#selectTask");
+				for ( var i = 0 ; i < data.length ; i ++ ) {
+					var objOption = document.createElement("option");
+					objOption.text = data[i].name;
+					objOption.value = data[i].id;
+					selectEl.options.add(objOption);
+				}
+			},
+			error : function (e){
+				console.log(e);
+			}
+		})
+	}
+	
+	document.getElementById("btnStartTimer").onclick = function() {
+		var test = document.getElementById("selectTask");
+		var val = test.options[test.selectedIndex].value;
+		var request = {id : val};
+		console.log(JSON.stringify(request));
+		$.ajax({
+			url : "/start",
+			method : "POST",
+			contentType : 'application/json',
+			data : JSON.stringify(request),
+// 			data : val,
+// 			dataType : "json",
+			success : function(response){
+				console.log("started detailTimerId=" + response);
+				currentDetailId = response;
+				document.getElementById("btnStartTimer").disabled = true;
+				document.getElementById("btnPauseTimer").disabled = false;
+				document.getElementById("btnResumeTimer").disabled = true;
+				document.getElementById("btnFinishTimer").disabled = false;
+			},
+			error : function (e){
+				console.log(e);
+			}
+		})
+	};
+	
+	
+	document.getElementById("btnPauseTimer").onclick = function() {
+		$.ajax({
+			url : "/pause/"+currentDetailId,
+			method : "PUT",
+			success : function(response){
+				currentTimerId = response;
+				document.getElementById("btnStartTimer").disabled = true;
+				document.getElementById("btnPauseTimer").disabled = true;
+				document.getElementById("btnResumeTimer").disabled = false;
+				document.getElementById("btnFinishTimer").disabled = false;
+			},
+			error : function (e){
+				console.log(e);
+			}
+		})
+	};
+	document.getElementById("btnResumeTimer").onclick = function() {
+		var request = {id : currentTimerId}
+		$.ajax({
+			url : "/resume",
+			method : "POST",
+			contentType : 'application/json',
+			data : JSON.stringify(request),
+			success : function(response){
+				currentDetailId = response;
+				document.getElementById("btnStartTimer").disabled = true;
+				document.getElementById("btnPauseTimer").disabled = false;
+				document.getElementById("btnResumeTimer").disabled = true;
+				document.getElementById("btnFinishTimer").disabled = false;
+			},
+			error : function (e){
+				console.log(e);
+			}
+		})
+	};
+	document.getElementById("btnFinishTimer").onclick = function() {
+		console.log("finish id="+currentDetailId);
+		$.ajax({
+			url : "/finish/"+currentDetailId,
+			method : "PUT",
+			success : function(response){
+				currentDetailId = response;
+				document.getElementById("btnStartTimer").disabled = false;
+				document.getElementById("btnPauseTimer").disabled = true;
+				document.getElementById("btnResumeTimer").disabled = true;
+				document.getElementById("btnFinishTimer").disabled = true;
+			},
+			error : function (e){
+				console.log(e);
+			}
+		})
+	};
+	
+	
+</script>
+</html>
