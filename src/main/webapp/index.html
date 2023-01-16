@@ -6,9 +6,14 @@
 	<title>2Insert title here</title>
 </head>
 <body>
-	<select id="selectTask">
-		<option value="">--</option>
-	</select>
+	<div data-include-path="header.html"></div>
+	
+	<div>
+		<select id="selectTask">
+			<option value="">--</option>
+		</select>
+	</div>
+	
 	<div>
 		<button id="btnStartTimer">START</button>
 		<button id="btnPauseTimer" disabled>PAUSE</button>
@@ -26,7 +31,7 @@
 	function initPage(){
 		var serverUrl = window.location.hostname+":"+window.location.port;
 		$.ajax({
-			url : "/taskList",
+			url : "/task/getList",
 			method : "GET",
 			contentType : 'application/json',
 			success : function(data){
@@ -125,6 +130,24 @@
 		})
 	};
 	
-	
+
+	window.addEventListener('load', function() {
+		var allElements = document.getElementsByTagName('*');
+		Array.prototype.forEach.call(allElements, function(el) {
+			var includePath = el.dataset.includePath;
+			if (includePath) {
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function () {
+					if (this.readyState == 4 && this.status == 200) {
+						el.outerHTML = this.responseText;
+					}
+				};
+				xhttp.open('GET', includePath, true);
+				xhttp.send();
+			}
+		});
+	});
+
+
 </script>
 </html>

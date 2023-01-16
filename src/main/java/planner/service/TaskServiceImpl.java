@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import planner.dto.TaskDto;
 import planner.entity.Task;
 import planner.enums.ProgressType;
 import planners.common.persistence.MyPersistenceUtil;
@@ -19,7 +20,7 @@ public class TaskServiceImpl implements TaskService {
 	private static final Logger logger = LoggerFactory.getLogger(TaskServiceImpl.class);
 
 	@Override
-	public void addNewTask(String name, ProgressType progressType) {
+	public void addNewTask(TaskDto taskDto) {
 		EntityManager em = MyPersistenceUtil.createEntityManager();
 		EntityTransaction tx = em.getTransaction(); //트랜잭션 기능 획득
 		try {
@@ -27,9 +28,11 @@ public class TaskServiceImpl implements TaskService {
 			Task task = new Task();
 			em.persist(task);
 			
-			task.setName(name);
-			task.setPercentage(0);
-			task.setProgressType(progressType);
+			task.setName(taskDto.getName());
+			task.setPercentage(
+					taskDto.getPercentage()!=null?
+							taskDto.getPercentage()
+							:0);
 			
 			tx.commit();//트랜잭션 커밋
 		} catch (Exception e) {
@@ -53,7 +56,6 @@ public class TaskServiceImpl implements TaskService {
 			
 			task.setName(name);
 			task.setPercentage(0);
-			task.setProgressType(progressType);
 			
 			tx.commit();//트랜잭션 커밋
 		} catch (Exception e) {

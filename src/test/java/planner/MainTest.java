@@ -70,7 +70,6 @@ class MainTest {
 			Task task1 = new Task();
 //			100, "jpa", ProgressType.NONE, 3);
 			task1.setName("Docker");
-			task1.setProgressType(ProgressType.NONE);
 			task1.setPercentage(0);
 			em.persist(task1);
 			

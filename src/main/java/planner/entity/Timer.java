@@ -2,6 +2,7 @@ package planner.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,6 +25,14 @@ public class Timer {
 	@JsonIgnore
 	private Task task; 
 
+	// nullable
+	private Integer percentage;
+	private Integer page;
+	private Integer chapter;
+	private Boolean passOrFail;
+	
+
+	
 	// TODO ? mapped by 잘 모르겠음
 	@OneToMany(mappedBy = "timer") 
 	private List<TimerDetailHistory> timerDetailHistorys = new ArrayList<>();
@@ -48,6 +57,39 @@ public class Timer {
 		this.task.getTimers().add(this);
 	}
 
+	public Integer getPercentage() {
+		return percentage;
+	}
+	public void setPercentage(Integer percentage) {
+		this.percentage = percentage;
+	}
+	public Integer getPage() {
+		return page;
+	}
+	public void setPage(Integer page) {
+		this.page = page;
+	}
+	public Integer getChapter() {
+		return chapter;
+	}
+	public void setChapter(Integer chapter) {
+		this.chapter = chapter;
+	}
+	public Boolean getPassOrFail() {
+		return passOrFail;
+	}
+	public void setPassOrFail(Boolean passOrFail) {
+		this.passOrFail = passOrFail;
+	}
+
+	public List<TimerDetailHistory> getTimerDetailHistorys() {
+		return timerDetailHistorys;
+	}
+
+	public void setTimerDetailHistorys(List<TimerDetailHistory> timerDetailHistorys) {
+		this.timerDetailHistorys = timerDetailHistorys;
+	}
+
 	public List<TimerDetailHistory> getTimerDetailHistories() {
 		return timerDetailHistorys;
 	}
@@ -62,5 +104,4 @@ public class Timer {
 	}
 	
 	
-	
-}	
+}

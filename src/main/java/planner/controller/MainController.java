@@ -1,6 +1,5 @@
 package planner.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import planner.dto.TaskDto;
 import planner.dto.TimerDto;
@@ -71,22 +69,37 @@ public class MainController {
 		return ResponseEntity.ok(detail.getId());
 	}
 
-	@GetMapping("/taskList")
-	public ResponseEntity<List<TaskDto>> taskList(){
-		logger.info("/taskList");
+	@GetMapping("/task/getList")
+	public ResponseEntity<List<TaskDto>> taskGetList(){
+		logger.info("/task/getList");
 		List<Task> temp = taskService.getTaskList();
 		List<TaskDto> tasks = temp.stream()
 				.map(TaskDto::new)
 				.collect(Collectors.toList());
-		
+		tasks.forEach((TaskDto item) -> {
+			if ( item.getPage() == null )item.setPage(0);
+			if ( item.getChapter() == null )item.setChapter(0);
+			if ( item.getPercentage() == null )item.setPercentage(0);
+		});
 		return ResponseEntity.ok(tasks);
 	}
 	@GetMapping("/taskTimerList/{taskId}")
 	public ResponseEntity<List<Timer>> taskTimerList(@PathVariable(value = "taskId")int taskId){
 		logger.info("/taskTimerList {}", taskId);
-		List<Timer> list = timerService.getTimerList(taskId);;
-		
+		List<Timer> list = timerService.getTimerList(taskId);
+		list.forEach((Timer item) -> {
+			if ( item.getPage() == null )item.setPage(0);
+			if ( item.getChapter() == null )item.setChapter(0);
+			if ( item.getPercentage() == null )item.setPercentage(0);
+		});
 		return ResponseEntity.ok(list);
+	}
+	
+	@PostMapping("/task/add")
+	public ResponseEntity<Integer> taskAdd(@RequestBody TaskDto taskDto){
+		logger.info("/task/add {}", taskDto);
+		taskService.addNewTask(taskDto);
+		return ResponseEntity.ok(null);
 	}
 	@GetMapping("/index")
 	public String index() {
@@ -96,8 +109,9 @@ public class MainController {
 	public String tasklist() {
 		return "tasklist.html";
 	}
-	@GetMapping("/taskdetail")
-	public String taskDetail() {
+	@GetMapping("/taskdetail/{detailId}")
+	public String taskDetail(@PathVariable(value = "detailId")int detailId) {
+		logger.info("detail {}", detailId);
 		return "taskdetail.html";
 	}
 }

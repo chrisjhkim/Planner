@@ -156,16 +156,16 @@ public class TimerServiceImpl implements TimerService {
 	public List<Timer> getTimerList(int taskId) {
 		EntityManager em = MyPersistenceUtil.createEntityManager();
 		EntityTransaction tx = em.getTransaction(); //트랜잭션 기능 획득
+		List<Timer> result;
 		try {
 			tx.begin(); //트랜잭션 시작
 			
 			Task task = em.find(Task.class, taskId);
 			
-			List<Timer> result = task.getTimers();
+			result = task.getTimers();
 			
 			
 			
-			return result;
 			
 		} catch (Exception e) {
 			tx.rollback(); //트랜잭션 롤백
@@ -173,6 +173,7 @@ public class TimerServiceImpl implements TimerService {
 		} finally {
 			em.close(); //엔티티 매니저 종료
 		}
+		return result;
 
 	}
 

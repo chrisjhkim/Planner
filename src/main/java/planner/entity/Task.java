@@ -14,25 +14,29 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import planner.enums.ProgressType;
 
 @Entity
-@SequenceGenerator(
-		name="TASK_SEQ_GENERATOR"
-		,  sequenceName = "TASK_SEQ"
-		, initialValue = 1
-		, allocationSize = 1	// 기본값 : 50
-		)
+//@SequenceGenerator(
+//		name="TASK_SEQ_GENERATOR"
+//		,  sequenceName = "TASK_SEQ"
+//		, initialValue = 1
+//		, allocationSize = 1	// 기본값 : 50
+//		)
 public class Task {
 
 	@Id @Column(name = "TASK_ID")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TASK_SEQ_GENERATOR")
+	@GeneratedValue
+//	(strategy = GenerationType.SEQUENCE, generator = "TASK_SEQ_GENERATOR")
 	private int id;
 	
 	private String name;
 	
-	@Enumerated(EnumType.STRING)
-	@Nullable
-	private ProgressType progressType;
+//	@Enumerated(EnumType.STRING)
+//	@Nullable
+//	private ProgressType progressType;
 	
-	private int percentage;
+	private Integer percentage;
+	private Integer page;
+	private Integer chapter;
+	private Boolean passOrFail;
 	
 	@OneToMany(mappedBy = "task")
 	private List<Timer> timers = new ArrayList<>();
@@ -40,7 +44,6 @@ public class Task {
 	@OneToMany(mappedBy = "task")
 	private List<ProgressHistory> progressHistories = new ArrayList<>();
 
-	
 	
 	public int getId() {
 		return id;
@@ -57,21 +60,29 @@ public class Task {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public ProgressType getProgressType() {
-		return progressType;
-	}
-
-	public void setProgressType(ProgressType progressType) {
-		this.progressType = progressType;
-	}
-
-	public int getPercentage() {
+	public Integer getPercentage() {
 		return percentage;
 	}
-
-	public void setPercentage(int percentage) {
+	public void setPercentage(Integer percentage) {
 		this.percentage = percentage;
+	}
+	public Integer getPage() {
+		return page;
+	}
+	public void setPage(Integer page) {
+		this.page = page;
+	}
+	public Integer getChapter() {
+		return chapter;
+	}
+	public void setChapter(Integer chapter) {
+		this.chapter = chapter;
+	}
+	public Boolean getPassOrFail() {
+		return passOrFail;
+	}
+	public void setPassOrFail(Boolean passOrFail) {
+		this.passOrFail = passOrFail;
 	}
 
 	public List<Timer> getTimers() {
@@ -93,7 +104,7 @@ public class Task {
 
 	@Override
 	public String toString() {
-		return "Task [id=" + id + ", name=" + name + ", progressType=" + progressType + ", percentage=" + percentage
+		return "Task [id=" + id + ", name=" + name + ", percentage=" + percentage
 				+ ", progressHistories=" + progressHistories.stream().map(ProgressHistory::getId).collect(Collectors.toList()).toString() + "]";
 	}
 

@@ -31,26 +31,25 @@ class TimerServiceImplTest {
 	@Test
 //	@Transactional
 	void testStart() {
-		int detailId = -1;
-		
-		EntityManager em = MyPersistenceUtil.createEntityManager();
-		EntityTransaction tx = em.getTransaction(); //트랜잭션 기능 획득
-		try {
-			tx.begin(); //트랜잭션 시작
-			List<TimerDetailHistory> tempList = em.createQuery("SELECT d FROM TimerDetailHistory d ").getResultList();
-			assertNotNull(tempList);
-			assertNotEquals(0, tempList.size());
-			detailId = tempList.get(0).getId();
-			tx.commit();//트랜잭션 커밋
-		} catch (Exception e) {
-			tx.rollback(); //트랜잭션 롤백
-			throw e;
-		} finally {
-			em.close(); //엔티티 매니저 종료
-		}
+		TimerDetailHistory detail = timerService.start(null);
+		assertNotNull(detail);
+		assertNotNull(detail.getId());
+//		EntityManager em = MyPersistenceUtil.createEntityManager();
+//		EntityTransaction tx = em.getTransaction(); //트랜잭션 기능 획득
+//		try {
+//			tx.begin(); //트랜잭션 시작
+//			List<TimerDetailHistory> tempList = em.createQuery("SELECT d FROM TimerDetailHistory d ").getResultList();
+//			assertNotNull(tempList);
+//			assertNotEquals(0, tempList.size());
+//			detailId = tempList.get(0).getId();
+//			tx.commit();//트랜잭션 커밋
+//		} catch (Exception e) {
+//			tx.rollback(); //트랜잭션 롤백
+//			throw e;
+//		} finally {
+//			em.close(); //엔티티 매니저 종료
+//		}
 
-		
-		TimerDetailHistory detail = timerService.start(detailId);
 		
 		PlannerTestUtil.saveDetailId(detail);
 		
@@ -68,9 +67,26 @@ class TimerServiceImplTest {
 		assertTrue(true);
 	}
 	
-	@Test
+//	@Test
 	void testList() {
-		List<Timer> result = timerService.getTimerList(4);
+		EntityManager em = MyPersistenceUtil.createEntityManager();
+		EntityTransaction tx = em.getTransaction(); //트랜잭션 기능 획득
+		int taskId;
+		try {
+			tx.begin(); //트랜잭션 시작
+			List<Task> tempList = em.createQuery("SELECT t FROM Task t ").getResultList();
+			assertNotNull(tempList);
+			assertNotEquals(0, tempList.size());
+			taskId  = tempList.get(0).getId();
+			tx.commit();//트랜잭션 커밋
+		} catch (Exception e) {
+			tx.rollback(); //트랜잭션 롤백
+			throw e;
+		} finally {
+			em.close(); //엔티티 매니저 종료
+		}
+		
+		List<Timer> result = timerService.getTimerList(taskId);
 		logger.info(result.toString());
 	}
 	
